@@ -71,7 +71,7 @@ app.post("/send-otp", async (req, res) => {
     await redis.set(`otp:${email}`, otp, "EX", 300);
 
     // In a real application, you would send the OTP to the user's email here
-    console.log(`OTP for ${email}: ${otp}`);
+    console.log(`OTP for ${email}: ${otp}`); 
     return res.json({otp: otp, message: "OTP sent successfully" });
 
     // return res.json({ message: "OTP sent successfully" });
