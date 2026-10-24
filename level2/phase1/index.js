@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import User from "./model/user.model.js"
 import Redis from "ioredis";
 import ratelimiter from "./middleware/ratelimit.js";
+import sendEmail from "./lib/sendEmail.js";
+import emailQueue from "./queue.js";
 
 
 dotenv.config();
@@ -30,8 +32,12 @@ app.post("/create", async (req, res) => {
         name, email, password
     })
 
+    await emailQueue.add("send-email", {email});
+
     return res.json(user);
 })
+
+
 
 
 // get user without redis 
