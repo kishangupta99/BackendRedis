@@ -1,9 +1,59 @@
+
 services:
+  redis:
+    image: redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   nginx:
     image: nginx
     ports:
       - "8080:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - server1
+      - server2
+      - server3
 
+  server1:
+    build: ./server
+    env_file:
+      - ./server/.env
+    environment:
+      SERVER_NAME: "First server"
+      REDIS_HOST: redis
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "6001:6000"
 
+  server2:
+    build: ./server
+    env_file:
+      - ./server/.env
+    environment:
+      SERVER_NAME: "Second server"
+      REDIS_HOST: redis
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "6002:6000"
+
+  server3:
+    build: ./server
+    env_file:
+      - ./server/.env
+    environment:
+      SERVER_NAME: "Third server"
+      REDIS_HOST: redis
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "6003:6000"
